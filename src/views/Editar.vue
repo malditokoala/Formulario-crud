@@ -1,8 +1,20 @@
-<template>Editar{{ $route.params.id }}</template>
+<template>Editar{{ $route.params.id }} - {{tarea}}</template>
 
 <script>
-export default {};
+import {mapState, mapActions} from 'vuex';
+export default {
+     computed: {
+         ...mapState(['tarea'])
+     },
+     methods: {
+         ...mapActions(['setTarea'])
+     },
+     created(){
+         this.setTarea(this.$route.params.id)
+     }
+};
 </script>
+
 
 <style>
 </style>

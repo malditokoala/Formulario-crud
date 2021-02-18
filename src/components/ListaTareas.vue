@@ -19,12 +19,12 @@
             // Pone una coma si mas de un elemento // tarea.cotegorias === index
             + 1 ? '' : ', ';
             <option v-for="(categoria, index) in tarea.categorias" :key="index">
-              <!--     {{
+                  {{
                 tarea.categorias.length === index + 1
                   ? categoria
                   : categoria + ", "
-              }} -->
-              {{ tarea.categorias.join(", ") }}
+              }}
+             <!--  {{ tarea.categorias.join(", ") }} -->
             </option>
             n>
           </select>
@@ -35,6 +35,14 @@
           <button class="btn btn-danger btn-sm" @click="deleteTareas(tarea.id)">
             Eliminar
           </button>
+       <router-link class="btn btn-warning ml-2 btn-sm" :to="{
+               name: 'Editar',
+               params:{
+                 id: tarea.id
+               }
+             }">
+             Editar
+          </router-link>
         </td>
       </tr>
     </tbody>
