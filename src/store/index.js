@@ -17,11 +17,11 @@ export default createStore({
     },
     set(state, payload) {
       state.tareas.push(payload);
-      localStorage.setItem('tareas', JSON.stringify(state.tareas));
+      /* localStorage.setItem('tareas', JSON.stringify(state.tareas)); */
     },
     eliminar(state, payload) {
       state.tareas = state.tareas.filter((item) => item.id !== payload);
-      localStorage.setItem('tareas', JSON.stringify(state.tareas));
+      /* localStorage.setItem('tareas', JSON.stringify(state.tareas)); */
     },
     tarea(state, payload) {
       if(!state.tareas.find((item) => item.id === payload))
@@ -35,29 +35,73 @@ export default createStore({
     update(state, payload){
       state.tareas = state.tareas.map(item => item.id === payload.id ? payload : item)
       router.push('/');
-      localStorage.setItem('tareas', JSON.stringify(state.tareas));
+  /*     localStorage.setItem('tareas', JSON.stringify(state.tareas)); */
     }
   },
   actions: {
-    cargarLocalStorage({ commit }){
-      if( localStorage.getItem('tareas') ) {
-       
-        const tareas = JSON.parse(localStorage.getItem('tareas'));
-        commit('cargar', tareas);
-        return;
+    async cargarLocalStorage({ commit }){
+      try {
+        const res = await fetch('https://udemy-api-3e9ff-default-rtdb.firebaseio.com/tareas.json');
+        const dataDB = await res.json();
+        const arrayTareas =  [];//Object.entries(dataDB);
+         for (var id in dataDB){
+           arrayTareas.push(dataDB[id]);
+         }
+        commit('cargar', arrayTareas);
+        
+      } catch (error) {
+        console.log(error);
       }
-      localStorage.setItem('tareas', JSON.stringify([]));
+
     },
-    setTareas({ commit }, tarea) {
-      commit('set', tarea);
+    async setTareas({ commit }, tarea) {
+      try {
+        const res = await fetch(`https://udemy-api-3e9ff-default-rtdb.firebaseio.com/tareas/${tarea.id}.json`, {
+          method: 'PUT',
+          headers:{
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(tarea)
+        });
+        const dataDB = await res.json();
+        commit('set', dataDB);
+       
+      } catch (error) {
+        console.log(error);
+      }
+     
     },
-    deleteTareas({ commit }, id) {
+    async deleteTareas({ commit }, id) {
       commit('eliminar', id);
+      try {
+        await fetch(`https://udemy-api-3e9ff-default-rtdb.firebaseio.com/tareas/${id}.json`, {
+          method: 'DELETE',
+         
+        });
+      commit('tarea', id);
+      } catch (error) {
+        console.log(error);
+      }
     },
     setTarea({ commit }, id) {
+      
       commit('tarea', id);
     },
-    updateTarea({commit}, tarea){
+    async updateTarea({commit}, tarea){
+      try {
+
+        const res = await fetch(`https://udemy-api-3e9ff-default-rtdb.firebaseio.com/tareas/${tarea.id}.json`, {
+          method: 'PATCH',
+          headers:{
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(tarea)
+        });
+        const datDB = res.json();
+        commit('update', dataDB);
+      } catch (error) {
+        
+      }
       commit('update', tarea);
     }
   },
