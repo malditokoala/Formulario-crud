@@ -28,7 +28,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(["setTareas"]),
+    ...mapActions(["setTareas", "cargarLocalStorage"]),
     procesarFormulario() {
       //e.preventDefault();
       console.log(this.tarea);
@@ -54,6 +54,9 @@ export default {
         numero: 0,
       };
     },
+  },
+  created() {
+    this.cargarLocalStorage();
   },
 };
 </script>
