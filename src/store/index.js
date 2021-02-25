@@ -48,6 +48,7 @@ export default createStore({
     cerrarSesion({commit}){
       commit('setUser', null);
       router.push('/ingreso');
+      localStorage.removeItem('usuario');
     },
     
     async ingresoUsuario({commit}, usuario){
@@ -67,8 +68,9 @@ export default createStore({
           return console.error(userDB.error.message);
         }
         commit('setUser', userDB);
+        localStorage.setItem('usuario', JSON.stringify( userDB ) );
         router.push('/');
-
+        
       } catch (error) {
         console.log(error);
       }    
@@ -93,13 +95,20 @@ export default createStore({
 
         commit('setUser', userDB);
         router.push('/');
-
+        localStorage.setItem('usuario', JSON.stringify( userDB ) );
       } catch (error) {
         console.log(error);
       }
     },
 
     async cargarLocalStorage({ commit, state }){
+      if(localStorage.getItem('usuario')){
+        
+        commit('setUser', JSON.parse(localStorage.getItem('usuario')));
+      }else{
+        //commit('setUser', null);
+        return commit('setUser', null);;
+      }
       try {
         const res = await fetch(`https://udemy-api-3e9ff-default-rtdb.firebaseio.com/tareas/${state.user.localId}.json?auth=${state.user.idToken}`);
         const dataDB = await res.json();
